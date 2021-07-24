@@ -13,6 +13,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Center(
         child: Container(
+          color: Theme.of(context).primaryColor,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -24,6 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 'Loading',
                 style: TextStyle(fontSize: 18.0),
               ),
+              Text('Loading'),
             ],
           ),
         ),

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "814026659071",
+    "project_id": "mobile-apps-c6131",
+    "storage_bucket": "mobile-apps-c6131.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814026659071:android:1fea5fd452940f8e42e8ca",
+        "android_client_info": {
+          "package_name": "com.example.restorantapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "814026659071-l4m07q5fkbkn41u8gkjfaj685cflvum5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.restorantapp",
+            "certificate_hash": "b8e7293415a30032ecfe006fd0defaf83fa38162"
+          }
+        },
+        {
+          "client_id": "814026659071-khg61lvrhehd958d38jk2vlubpe9a8ed.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgGM4TMKpGIHKvfAAD_rAJ_FgLrHVnuW4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "814026659071-khg61lvrhehd958d38jk2vlubpe9a8ed.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

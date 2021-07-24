@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
             children: [
               CircularProgressIndicator(),
               SizedBox(
-                height: 10.0,
+                height: 15.0,
               ),
               Text(
                 'Loading',

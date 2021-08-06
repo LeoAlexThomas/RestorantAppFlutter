@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:restorantapp/controller/controller.dart';
 import 'package:restorantapp/models/itemcards.dart';
 import 'package:restorantapp/screens/cartScren.dart';
@@ -41,7 +42,6 @@ class _HomeState extends State<Home> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // Timer.periodic(Duration(seconds: 1), (t) => setState(() {}));
     initialStep();
     tabWidget(menuList);
     tabBarWidget(menuList);
@@ -58,8 +58,17 @@ class _HomeState extends State<Home> {
       length: menuList.length,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(information.restaurant_name),
+          elevation: 1,
+          iconTheme: IconThemeData(color: Colors.grey),
+          backgroundColor: Colors.white,
+          title: Text(
+            information.restaurant_name,
+            style: TextStyle(color: Colors.grey),
+          ),
           bottom: TabBar(
+            labelColor: Colors.red,
+            indicatorColor: Colors.red,
+            unselectedLabelColor: Colors.grey,
             tabs: tabs,
             isScrollable: true,
           ),
@@ -69,33 +78,47 @@ class _HomeState extends State<Home> {
                 children: [
                   new IconButton(
                     onPressed: () {
-                      print('Cart Page');
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) => CartScreen(
-                              items: cartItems,
-                              itemCount: dishCount,
-                              onChanged: (String oper,
-                                      Map<String, dynamic> selectedDish,
-                                      Map<String, int> updatedCount) =>
-                                  updateCartItems(
-                                      oper, selectedDish, updatedCount),
-                            ),
-                          ));
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return CartScreen(
+                            uid: widget.uid,
+                            userName: widget.username,
+                            image: widget.image,
+                            items: cartItems,
+                            itemCount: dishCount,
+                            onChanged: (String oper,
+                                    Map<String, dynamic> selectedDish,
+                                    Map<String, int> updatedCount) =>
+                                updateCartItems(
+                                    oper, selectedDish, updatedCount),
+                          );
+                        },
+                      ));
                     },
-                    icon: Icon(Icons.shopping_cart),
+                    icon: Icon(
+                      Icons.shopping_cart,
+                      color: Colors.grey,
+                    ),
                   ),
                   new Positioned(
                     top: 3.0,
                     right: 4.0,
                     child: new Center(
-                      child: new Text(
-                        cartItems.length.toString(),
-                        style: new TextStyle(
-                          color: Colors.white,
-                          fontSize: font_height * 2.2,
-                          fontWeight: FontWeight.w500,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: scr_height * 0.15,
+                          horizontal: scr_width * 0.15,
+                        ),
+                        decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(50.0)),
+                        child: new Text(
+                          cartItems.length.toString(),
+                          style: new TextStyle(
+                            color: Colors.white,
+                            fontSize: font_height * 2,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
@@ -109,44 +132,39 @@ class _HomeState extends State<Home> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                    color: Colors.greenAccent,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(20.0),
-                      bottomRight: Radius.circular(20.0),
-                    )),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(50.0),
-                      child: widget.image != ''
-                          ? Image.network(widget.image)
-                          : Icon(Icons.person),
-                    ),
-                    Text(widget.username),
-                    widget.uid != '' ? Text('ID: ${widget.uid}') : Text(''),
-                  ],
+              Container(
+                height: scr_height * 25,
+                child: DrawerHeader(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        // begin: ,
+                        colors: [
+                          Colors.green,
+                          Colors.lightGreen,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20.0),
+                        bottomRight: Radius.circular(20.0),
+                      )),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(50.0),
+                        child: widget.image != ''
+                            ? Image.network(widget.image)
+                            : Icon(Icons.person),
+                      ),
+                      Text(
+                        widget.username,
+                        style: TextStyle(fontSize: font_height * 2.5),
+                      ),
+                      widget.uid != '' ? Text('ID: ${widget.uid}') : Text(''),
+                    ],
+                  ),
                 ),
               ),
-              // TextButton(
-              //   onPressed: () async {
-              //     await AuthProvider().logout();
-              //     Navigator.push(context,
-              //         MaterialPageRoute(builder: (context) => LoginScreen()));
-              //   },
-              //   child: Container(
-              //     width: scr_width * 25,
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //       children: [
-              //         Icon(Icons.logout),
-              //         Text('LOGOUT'),
-              //       ],
-              //     ),
-              //   ),
-              // ),
               ListTile(
                 onTap: () async {
                   await AuthProvider().logout();
@@ -154,7 +172,11 @@ class _HomeState extends State<Home> {
                       MaterialPageRoute(builder: (context) => LoginScreen()));
                 },
                 leading: Icon(Icons.logout),
-                title: Text('LOG OUT'),
+                title: Text(
+                  'LOG OUT',
+                  style: TextStyle(
+                      fontSize: font_height * 2, color: Colors.grey[700]),
+                ),
               ),
             ],
           ),
@@ -198,8 +220,11 @@ class _HomeState extends State<Home> {
     // print(dishCount);
   }
 
-  updateCartItems(String oper, Map<String, dynamic> selectedDish,
-      Map<String, int> updatedCount) {
+  updateCartItems(
+    String oper,
+    Map<String, dynamic> selectedDish,
+    Map<String, int> updatedCount,
+  ) {
     // print('Selected dishes: $updatedCount');
     setState(() {
       dishCount = updatedCount;
@@ -208,6 +233,7 @@ class _HomeState extends State<Home> {
           if (!cartItems.contains(selectedDish)) {
             cartItems.add(selectedDish);
           }
+
           break;
         case "remove":
           if (dishCount[selectedDish['dish_name']] == 0) {

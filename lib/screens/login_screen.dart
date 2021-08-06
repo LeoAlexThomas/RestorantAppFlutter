@@ -47,79 +47,119 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              'assets/icons/firebase-logo.png',
+              height: scr_height * 45,
+              width: scr_width * 35,
+            ),
             Container(
-              width: scr_width * 65,
+              width: scr_width * 75,
+              padding: EdgeInsets.symmetric(
+                vertical: scr_height * 2.5,
+                horizontal: scr_width * 5,
+              ),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black,
-                      offset: Offset(0.0, 0.0),
-                      blurRadius: 10.0),
-                ],
+                borderRadius: BorderRadius.circular(50.0),
+                color: Colors.blue,
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
                     width: scr_width * 10,
-                    child: Image.asset('assets/icons/google-logo.png'),
+                    height: scr_height * 6,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100.0),
+                        child: Image.asset(
+                          'assets/icons/google-logo.png',
+                          width: scr_width * 10,
+                          height: scr_height * 5,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ),
                   ),
-                  TextButton(
-                    onPressed: () async {
-                      Map<String, dynamic> res =
-                          await AuthProvider().loginWithGoogle();
-                      if (res['result']) {
-                        print('Logged in');
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Home(
-                                      username: res['username'],
-                                      uid: res['uid'],
-                                      image: res['image'],
-                                    )));
-                      } else
-                        print('Log in error');
-                    },
-                    child: Text(
-                      "Login with GOOGLE",
-                      style: TextStyle(fontSize: font_height * 2.5),
+                  Container(
+                    width: scr_width * 47,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: TextButton(
+                        onPressed: () async {
+                          Map<String, dynamic> res =
+                              await AuthProvider().loginWithGoogle();
+                          if (res['result']) {
+                            print('Logged in');
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Home(
+                                          username: res['username'],
+                                          uid: res['uid'],
+                                          image: res['image'],
+                                        )));
+                          } else
+                            print('Log in error');
+                        },
+                        child: Text(
+                          "Google",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: font_height * 2.5,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
             SizedBox(
-              height: scr_height * 2.5,
+              height: scr_height * 1,
             ),
             Container(
-              width: scr_width * 65,
+              width: scr_width * 75,
+              padding: EdgeInsets.symmetric(
+                vertical: scr_height * 2.5,
+                horizontal: scr_width * 5,
+              ),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black,
-                      offset: Offset(0.0, 0.0),
-                      blurRadius: 10.0),
-                ],
+                borderRadius: BorderRadius.circular(50.0),
+                color: Colors.green[700],
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.phone,
-                    color: Colors.blue,
-                    size: font_height * 3.5,
+                  Container(
+                    width: scr_width * 5,
+                    height: scr_height * 6,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Icon(
+                        Icons.phone,
+                        color: Colors.white,
+                        size: font_height * 3.5,
+                      ),
+                    ),
                   ),
-                  TextButton(
-                      onPressed: () => showMessage(),
-                      child: Text(
-                        "Login with Mobile",
-                        style: TextStyle(fontSize: font_height * 2.5),
-                      )),
+                  Container(
+                    width: scr_width * 55,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: TextButton(
+                          onPressed: () => showMessage(),
+                          child: Text(
+                            "Phone",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: font_height * 2.5,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )),
+                    ),
+                  ),
                 ],
               ),
             ),

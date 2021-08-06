@@ -1,9 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:restorantapp/screens/home.dart';
 
 class CartScreen extends StatefulWidget {
   final items;
+  final userName;
+  final uid;
+  final image;
   final Map<String, int> itemCount;
   final Function(String oper, Map<String, dynamic> selectedDish,
       Map<String, int> updatedCount) onChanged;
@@ -11,7 +15,10 @@ class CartScreen extends StatefulWidget {
       {Key? key,
       required this.items,
       required this.itemCount,
-      required this.onChanged})
+      required this.onChanged,
+      this.userName,
+      this.uid,
+      this.image})
       : super(key: key);
 
   @override
@@ -23,6 +30,7 @@ class _CartScreenState extends State<CartScreen> {
   var scr_width;
   var font_height;
   double sums = 0;
+  int items = 0;
 
   Map<String, dynamic> dishPrice = {};
 
@@ -30,7 +38,16 @@ class _CartScreenState extends State<CartScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    addSums();
+
+    for (var i = 0; i < widget.items.length; i++) {
+      sums = sums +
+          (widget.items[i]['dish_price'] *
+              widget.itemCount[widget.items[i]['dish_name']]);
+      sums = roundDouble(sums, 2);
+    }
+    widget.itemCount.forEach((key, value) {
+      items += value;
+    });
   }
 
   double roundDouble(double value, int places) {
@@ -38,30 +55,21 @@ class _CartScreenState extends State<CartScreen> {
     return ((value * mod).round().toDouble() / mod);
   }
 
-  addSums() {
-    for (var i = 0; i < widget.items.length; i++) {
-      print('From items price: ${widget.items[i]['dish_price']}');
-      print(
-          'From ItemsCount: ${(widget.itemCount[widget.items[i]['dish_name']])}');
-      sums = sums +
-          (widget.items[i]['dish_price'] *
-              widget.itemCount[widget.items[i]['dish_name']]);
-      sums = roundDouble(sums, 2);
-      print('total Price: $sums');
-    }
+  addItem(double price) {
+    sums += price;
+    sums = roundDouble(sums, 2);
+
+    items++;
   }
 
-  removeSums() {
-    for (var i = 0; i < widget.items.length; i++) {
-      print('From items price: ${widget.items[i]['dish_price']}');
-      print(
-          'From ItemsCount: ${(widget.itemCount[widget.items[i]['dish_name']])}');
-      sums = sums -
-          (widget.items[i]['dish_price'] *
-              widget.itemCount[widget.items[i]['dish_name']]);
-      sums = roundDouble(sums, 2);
-      print('total Price: $sums');
-    }
+  removeItem(double price) {
+    sums -= price;
+    sums = roundDouble(sums, 2);
+
+    if (widget.items.length == 0)
+      items = 0;
+    else
+      items--;
   }
 
   @override
@@ -71,7 +79,19 @@ class _CartScreenState extends State<CartScreen> {
     font_height = MediaQuery.of(context).size.height * 0.01;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Order Summary'),
+        elevation: 1,
+        backgroundColor: Colors.white,
+        title: Text(
+          'Order Summary',
+          style: TextStyle(color: Colors.grey),
+        ),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.grey,
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -85,7 +105,7 @@ class _CartScreenState extends State<CartScreen> {
             ),
             child: Center(
                 child: Text(
-              '${widget.items.length} Dishes',
+              '${widget.items.length} Dishes - $items Items',
               style: TextStyle(
                 fontSize: font_height * 3.0,
                 fontWeight: FontWeight.bold,
@@ -95,7 +115,7 @@ class _CartScreenState extends State<CartScreen> {
           ),
           Container(
             width: double.infinity,
-            height: scr_height * 60,
+            height: scr_height * 55,
             child: ListView.separated(
                 itemBuilder: (context, index) {
                   return ListTile(
@@ -144,6 +164,8 @@ class _CartScreenState extends State<CartScreen> {
                               GestureDetector(
                                 onTap: () {
                                   setState(() {
+                                    removeItem(
+                                        widget.items[index]['dish_price']);
                                     if (widget.itemCount[widget.items[index]
                                             ['dish_name']]! >
                                         0) {
@@ -155,7 +177,6 @@ class _CartScreenState extends State<CartScreen> {
                                     }
                                     widget.onChanged("remove",
                                         widget.items[index], widget.itemCount);
-                                    removeSums();
                                   });
                                 },
                                 child: Icon(
@@ -182,7 +203,7 @@ class _CartScreenState extends State<CartScreen> {
                                     widget.onChanged("add", widget.items[index],
                                         widget.itemCount);
                                     // print('added');
-                                    addSums();
+                                    addItem(widget.items[index]['dish_price']);
                                   });
                                 },
                                 child: Icon(
@@ -208,17 +229,23 @@ class _CartScreenState extends State<CartScreen> {
                 itemCount: widget.items.length),
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: scr_width * 10),
+            margin: EdgeInsets.symmetric(
+                vertical: scr_height * 2, horizontal: scr_width * 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total Price:',
-                  style: TextStyle(fontSize: font_height * 3),
+                  'Total Amount:',
+                  style: TextStyle(
+                      fontSize: font_height * 3, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   'INR ${sums.toString()}',
-                  style: TextStyle(fontSize: font_height * 3),
+                  style: TextStyle(
+                    fontSize: font_height * 3,
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -226,17 +253,41 @@ class _CartScreenState extends State<CartScreen> {
           Container(
             width: scr_width * 90,
             height: scr_height * 10,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25.0),
-              color: Colors.grey,
-            ),
             child: ElevatedButton(
-              onPressed: widget.items.length == 0 ? null : () {},
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.green),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50.0),
+                )),
+              ),
+              onPressed: widget.items.length != 0
+                  ? () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            Future.delayed(Duration(seconds: 5), () async {
+                              Navigator.of(context).pop(true);
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => Home(
+                                    username: widget.userName,
+                                    uid: widget.uid,
+                                    image: widget.image,
+                                  ),
+                                ),
+                              );
+                            });
+                            return AlertDialog(
+                              title: Text("Order successfully placed"),
+                            );
+                          });
+                    }
+                  : null,
               child: Text(
                 'Place Order',
                 style: TextStyle(
                   fontSize: font_height * 3.0,
-                  fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
@@ -253,5 +304,34 @@ class _CartScreenState extends State<CartScreen> {
     dishPrice[widget.items[index]['dish_name']] = price;
     // setState(() {});
     return "INR : $price";
+  }
+
+  updateCartItems(
+    String oper,
+    Map<String, dynamic> selectedDish,
+    Map<String, int> updatedCount,
+  ) {
+    // print('Selected dishes: $updatedCount');
+    setState(() {
+      switch (oper) {
+        case "add":
+          if (widget.items.contains(selectedDish)) {
+            widget.items.add(selectedDish);
+          }
+
+          break;
+        case "remove":
+          if (widget.itemCount[selectedDish['dish_name']] == 0) {
+            if (widget.items.contains(selectedDish)) {
+              int index = widget.items.indexOf(selectedDish);
+              Map<String, dynamic> res = widget.items.removeAt(index);
+              // print('itemRemoved $res');
+            }
+          }
+          break;
+      }
+    });
+    // print(selectedDish['dish_name']);
+    // print(cartItems);
   }
 }

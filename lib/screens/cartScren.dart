@@ -264,6 +264,7 @@ class _CartScreenState extends State<CartScreen> {
               onPressed: widget.items.length != 0
                   ? () {
                       showDialog(
+                          barrierDismissible: false,
                           context: context,
                           builder: (BuildContext context) {
                             Future.delayed(Duration(seconds: 5), () async {

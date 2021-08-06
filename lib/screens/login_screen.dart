@@ -38,10 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
     var scr_width = MediaQuery.of(context).size.width / 100;
     var font_height = MediaQuery.of(context).size.height * 0.01;
     return Scaffold(
-      appBar: AppBar(
-        leading: Icon(Icons.restaurant),
-        title: Text("Login"),
-      ),
       body: Container(
         width: double.infinity,
         child: Column(

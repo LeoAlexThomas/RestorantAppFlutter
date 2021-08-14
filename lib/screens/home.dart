@@ -1,9 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_cart/flutter_cart.dart';
+import 'package:restorantapp/Widget/listTileWidget.dart';
+import 'package:restorantapp/controller/menuController.dart';
 import 'package:restorantapp/controller/controller.dart';
-import 'package:restorantapp/models/itemcards.dart';
-import 'package:restorantapp/screens/cartScren.dart';
+import 'package:restorantapp/models/menuItems.dart';
+import 'package:restorantapp/screens/cartScreen.dart';
 import 'package:restorantapp/screens/login_screen.dart';
 import 'package:restorantapp/utils/firebase_auth.dart';
 
@@ -23,36 +24,48 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final RestorantController controller = RestorantController.to;
+  final RestorantController resController = RestorantController.to;
+  final MenuItemController menuController = MenuItemController.to;
+  var cart = FlutterCart();
   var information;
   _HomeState() {
-    information = controller.info.first;
+    information = resController.info.first;
   }
-  List<Map<String, dynamic>> cartItems = [];
-  int itemCount = 0;
+
   List menuList = [];
   List dishes = [];
   List<Widget> tabs = [];
   List<Widget> tabChidren = [];
-
+  List<Widget> tabLoadingWidget = [];
+  List<DishItems> cartItemAdded = [];
   Map<String, int> dishCount = {};
-  int sum_selected_items = 0;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initialStep();
     tabWidget(menuList);
-    tabBarWidget(menuList);
+    // tabBarWidget(menuList);
+    tabLoading(menuList);
     // print('DishesCount: $dishCount');
+    getCartItems();
+  }
+
+  getCartItems() {
+    menuController.menuitems.forEach((key, value) {
+      for (var item in value) {
+        if (item.addToCart) {
+          if (!cartItemAdded.contains(item)) cartItemAdded.add(item);
+        }
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    var scr_width = MediaQuery.of(context).size.width / 100;
-    var scr_height = MediaQuery.of(context).size.height / 100;
-    var font_height = MediaQuery.of(context).size.height * 0.01;
+    var scrWidth = MediaQuery.of(context).size.width / 100;
+    var scrHeight = MediaQuery.of(context).size.height / 100;
+    var fontHeight = MediaQuery.of(context).size.height * 0.01;
     // print('Dishes: $dishes');
     return DefaultTabController(
       length: menuList.length,
@@ -62,13 +75,15 @@ class _HomeState extends State<Home> {
           iconTheme: IconThemeData(color: Colors.grey),
           backgroundColor: Colors.white,
           title: Text(
-            information.restaurant_name,
-            style: TextStyle(color: Colors.grey),
+            information.restaurantName,
+            style: TextStyle(fontSize: fontHeight * 2.5, color: Colors.grey),
           ),
           bottom: TabBar(
             labelColor: Colors.red,
             indicatorColor: Colors.red,
             unselectedLabelColor: Colors.grey,
+            labelStyle: TextStyle(
+                fontSize: fontHeight * 2.0, fontWeight: FontWeight.bold),
             tabs: tabs,
             isScrollable: true,
           ),
@@ -80,17 +95,12 @@ class _HomeState extends State<Home> {
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
                         builder: (BuildContext context) {
-                          return CartScreen(
-                            uid: widget.uid,
+                          return CartScreenAlt(
+                            onChanged: (String oper, String dishId, dish) =>
+                                updateCartItems(oper, dishId, dish),
                             userName: widget.username,
+                            uid: widget.uid,
                             image: widget.image,
-                            items: cartItems,
-                            itemCount: dishCount,
-                            onChanged: (String oper,
-                                    Map<String, dynamic> selectedDish,
-                                    Map<String, int> updatedCount) =>
-                                updateCartItems(
-                                    oper, selectedDish, updatedCount),
                           );
                         },
                       ));
@@ -106,17 +116,17 @@ class _HomeState extends State<Home> {
                     child: new Center(
                       child: Container(
                         padding: EdgeInsets.symmetric(
-                          vertical: scr_height * 0.15,
-                          horizontal: scr_width * 0.15,
+                          vertical: scrHeight * 0.15,
+                          horizontal: scrWidth * 0.15,
                         ),
                         decoration: BoxDecoration(
                             color: Colors.red,
                             borderRadius: BorderRadius.circular(50.0)),
                         child: new Text(
-                          cartItems.length.toString(),
+                          '${cartItemAdded.length}',
                           style: new TextStyle(
                             color: Colors.white,
-                            fontSize: font_height * 2,
+                            fontSize: fontHeight * 2,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -133,7 +143,7 @@ class _HomeState extends State<Home> {
             padding: EdgeInsets.zero,
             children: [
               Container(
-                height: scr_height * 25,
+                height: scrHeight * 25,
                 child: DrawerHeader(
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -158,9 +168,14 @@ class _HomeState extends State<Home> {
                       ),
                       Text(
                         widget.username,
-                        style: TextStyle(fontSize: font_height * 2.5),
+                        style: TextStyle(fontSize: fontHeight * 2.5),
                       ),
-                      widget.uid != '' ? Text('ID: ${widget.uid}') : Text(''),
+                      widget.uid != ''
+                          ? Text(
+                              'ID: ${widget.uid}',
+                              style: TextStyle(fontSize: fontHeight * 1.5),
+                            )
+                          : Text(''),
                     ],
                   ),
                 ),
@@ -173,25 +188,67 @@ class _HomeState extends State<Home> {
                 },
                 leading: Icon(Icons.logout),
                 title: Text(
-                  'LOG OUT',
+                  'Log Out',
                   style: TextStyle(
-                      fontSize: font_height * 2, color: Colors.grey[700]),
+                      fontSize: fontHeight * 2, color: Colors.grey[700]),
                 ),
               ),
             ],
           ),
         ),
-        body: TabBarView(children: tabChidren),
+        body: TabBarView(children: tabBarView),
       ),
     );
   }
 
+  // List<Widget> get tabBarView {
+  //   List<Widget> tabbars = [];
+  //   for (var i = 0; i < menuList.length; i++) {
+  //     log('Dish :${dishes[i]}');
+  //     tabbars.add(ListTileBuilder(
+  //         onChanged: (String oper, String dishId, DishItems dish) =>
+  //             updateCartItems(oper, dishId, dish),
+  //         dishCat: menuList[i]));
+  //   }
+
+  //   return tabbars;
+  // }
+
+  List<Widget> get tabBarView {
+    List<Widget> tabbars = [];
+    for (var i = 0; i < menuList.length; i++) {
+      // log('Dish :${dishes[i].runtimeType}');
+      tabbars.add(ListTileBuilder(
+          onChanged: (String oper, String dishId, DishItems dish) =>
+              updateCartItems(oper, dishId, dish),
+          dishCat: menuList[i]));
+    }
+
+    return tabbars;
+  }
+
   initialStep() {
-    for (var item in information.table_menu_list) {
+    for (var item in information.tableMenuList) {
       menuList.add(item['menu_category']);
       dishes.add(item['category_dishes']);
     }
-    // print(dishes.first.first.runtimeType);
+    for (var i = 0; i < dishes.length; i++) {
+      List<DishItems> items = [];
+      for (var j = 0; j < dishes[i].length; j++) {
+        items.add(DishItems(
+          dishes[i][j]['dish_id'],
+          dishes[i][j]['dish_name'],
+          dishes[i][j]['dish_price'],
+          dishes[i][j]['dish_calories'].toInt(),
+          0, //dishCount
+          dishes[i][j]['dish_description'],
+          dishes[i][j]['addonCat'].length == 0 ? true : false,
+          dishes[i][j]['dish_image'],
+          false, //addToCart initial value
+        ));
+      }
+      menuController.add('${menuList[i]}', items);
+    }
   }
 
   tabWidget(List items) {
@@ -202,51 +259,70 @@ class _HomeState extends State<Home> {
     }
   }
 
-  tabBarWidget(List items) {
+  void tabLoading(List items) {
     for (var i = 0; i < items.length; i++) {
-      for (var j = 0; j < dishes[i].length; j++) {
-        dishCount[dishes[i][j]['dish_name']] = 0;
-      }
-      tabChidren.add(
-        ListItemsWidget(
-          dishes: dishes[i],
-          onChanged: (String operation, Map<String, dynamic> selectedDish,
-                  Map<String, int> updatedCount) =>
-              updateCartItems(operation, selectedDish, updatedCount),
-          dishCount: dishCount,
-        ),
+      tabLoadingWidget.add(
+        Center(
+            child: Container(
+          child: CircularProgressIndicator(),
+        )),
       );
     }
-    // print(dishCount);
   }
 
-  updateCartItems(
-    String oper,
-    Map<String, dynamic> selectedDish,
-    Map<String, int> updatedCount,
-  ) {
-    // print('Selected dishes: $updatedCount');
-    setState(() {
-      dishCount = updatedCount;
-      switch (oper) {
-        case "add":
-          if (!cartItems.contains(selectedDish)) {
-            cartItems.add(selectedDish);
-          }
+// Using Dish Id
 
-          break;
-        case "remove":
-          if (dishCount[selectedDish['dish_name']] == 0) {
-            if (cartItems.contains(selectedDish)) {
-              int index = cartItems.indexOf(selectedDish);
-              Map<String, dynamic> res = cartItems.removeAt(index);
-              // print('itemRemoved $res');
+  updateCartItems(String action, String dishId, DishItems dish) {
+    setState(() {
+      // print(dishCat);
+      if (action == 'add') {
+        menuController.menuitems.forEach((key, value) {
+          for (var item in value) {
+            if (item.dishId == dishId) {
+              item.dishCount++;
+              item.addToCart = true;
             }
           }
-          break;
+        });
+        getCartItems();
+      } else if (action == 'remove') {
+        menuController.menuitems.forEach((key, value) {
+          for (var item in value) {
+            if (item.dishId == dishId) {
+              if (item.dishCount > 0) {
+                item.dishCount--;
+                if (item.dishCount == 0) {
+                  item.addToCart = false;
+                }
+              }
+            }
+          }
+        });
+        if (!cartItemAdded[cartItemAdded.indexOf(dish)].addToCart)
+          cartItemAdded.remove(dish);
       }
     });
-    // print(selectedDish['dish_name']);
-    // print(cartItems);
   }
+
+  // Using Dish Catagory
+
+  // updateCartItems(String action, String dishCat, DishItems dish) {
+  //   setState(() {
+  //     // print(dishCat);
+  //     if (action == 'add') {
+  //       int index = menuController.menuitems[dishCat]!.indexOf(dish);
+  //       menuController.menuitems[dishCat]![index].dishCount++;
+  //       menuController.menuitems[dishCat]![index].addToCart = true;
+  //     } else if (action == 'remove') {
+  //       int index = menuController.menuitems[dishCat]!.indexOf(dish);
+  //       if (menuController.menuitems[dishCat]![index].dishCount > 0) {
+  //         menuController.menuitems[dishCat]![index].dishCount--;
+  //         if (menuController.menuitems[dishCat]![index].dishCount == 0) {
+  //           menuController.menuitems[dishCat]![index].addToCart = false;
+  //         }
+  //       }
+
+  //     }
+  //   });
+  // }
 }

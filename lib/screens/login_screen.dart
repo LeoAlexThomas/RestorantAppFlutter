@@ -20,23 +20,21 @@ class _LoginScreenState extends State<LoginScreen> {
   late String _verificationCode;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     controller.fetchAllRestorantInfo();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     mbController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    var scr_height = MediaQuery.of(context).size.height / 100;
-    var scr_width = MediaQuery.of(context).size.width / 100;
-    var font_height = MediaQuery.of(context).size.height * 0.01;
+    var scrHeight = MediaQuery.of(context).size.height / 100;
+    var scrWidth = MediaQuery.of(context).size.width / 100;
+    var fontHeight = MediaQuery.of(context).size.height * 0.01;
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -45,118 +43,119 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             Image.asset(
               'assets/icons/firebase-logo.png',
-              height: scr_height * 45,
-              width: scr_width * 35,
+              height: scrHeight * 45,
+              width: scrWidth * 35,
             ),
-            Container(
-              width: scr_width * 75,
-              padding: EdgeInsets.symmetric(
-                vertical: scr_height * 2.5,
-                horizontal: scr_width * 5,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50.0),
-                color: Colors.blue,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    width: scr_width * 10,
-                    height: scr_height * 6,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100.0),
-                        child: Image.asset(
-                          'assets/icons/google-logo.png',
-                          width: scr_width * 10,
-                          height: scr_height * 5,
-                          fit: BoxFit.fill,
+            GestureDetector(
+              onTap: () async {
+                Map<String, dynamic> res =
+                    await AuthProvider().loginWithGoogle();
+                if (res['result']) {
+                  print('Logged in');
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Home(
+                                username: res['username'],
+                                uid: res['uid'],
+                                image: res['image'],
+                              )));
+                } else
+                  print('Log in error');
+              },
+              child: Container(
+                width: scrWidth * 75,
+                padding: EdgeInsets.symmetric(
+                  vertical: scrHeight * 2.5,
+                  horizontal: scrWidth * 5,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50.0),
+                  color: Colors.blue,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: scrWidth * 10,
+                      height: scrHeight * 6,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100.0),
+                          child: Image.asset(
+                            'assets/icons/google-logo.png',
+                            width: scrWidth * 10,
+                            height: scrHeight * 5,
+                            fit: BoxFit.fill,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Container(
-                    width: scr_width * 47,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: TextButton(
-                        onPressed: () async {
-                          Map<String, dynamic> res =
-                              await AuthProvider().loginWithGoogle();
-                          if (res['result']) {
-                            print('Logged in');
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Home(
-                                          username: res['username'],
-                                          uid: res['uid'],
-                                          image: res['image'],
-                                        )));
-                          } else
-                            print('Log in error');
-                        },
+                    Container(
+                      width: scrWidth * 47,
+                      child: Align(
+                        alignment: Alignment.center,
                         child: Text(
                           "Google",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: font_height * 2.5,
+                            fontSize: fontHeight * 2.5,
                             color: Colors.white,
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             SizedBox(
-              height: scr_height * 1,
+              height: scrHeight * 1,
             ),
-            Container(
-              width: scr_width * 75,
-              padding: EdgeInsets.symmetric(
-                vertical: scr_height * 2.5,
-                horizontal: scr_width * 5,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50.0),
-                color: Colors.green[700],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: scr_width * 5,
-                    height: scr_height * 6,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Icon(
-                        Icons.phone,
-                        color: Colors.white,
-                        size: font_height * 3.5,
+            GestureDetector(
+              onTap: () => showMessage(),
+              child: Container(
+                width: scrWidth * 75,
+                padding: EdgeInsets.symmetric(
+                  vertical: scrHeight * 2.5,
+                  horizontal: scrWidth * 5,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50.0),
+                  color: Colors.green[700],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: scrWidth * 5,
+                      height: scrHeight * 6,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Icon(
+                          Icons.phone,
+                          color: Colors.white,
+                          size: fontHeight * 3.5,
+                        ),
                       ),
                     ),
-                  ),
-                  Container(
-                    width: scr_width * 55,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: TextButton(
-                          onPressed: () => showMessage(),
-                          child: Text(
-                            "Phone",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: font_height * 2.5,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )),
+                    Container(
+                      width: scrWidth * 55,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Phone",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: fontHeight * 2.5,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -243,6 +242,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   } catch (e) {
                     FocusScope.of(context).unfocus();
                     _scaffoldkey.currentState!
+                        // ignore: deprecated_member_use
                         .showSnackBar(SnackBar(content: Text('invalid OTP')));
                   }
                 },
@@ -256,17 +256,17 @@ class _LoginScreenState extends State<LoginScreen> {
     await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: '+91$phoneNumber',
         verificationCompleted: (PhoneAuthCredential credential) async {
-          await FirebaseAuth.instance
-              .signInWithCredential(credential)
-              .then((value) async {
-            if (value.user != null) {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          Home(username: phoneNumber, uid: '', image: '')));
-            }
-          });
+          await FirebaseAuth.instance.signInWithCredential(credential).then(
+            (value) async {
+              if (value.user != null) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            Home(username: phoneNumber, uid: '', image: '')));
+              }
+            },
+          );
         },
         verificationFailed: (FirebaseAuthException e) {
           print(e);

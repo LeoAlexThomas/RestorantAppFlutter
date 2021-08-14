@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:restorantapp/api/api.dart';
 import 'package:restorantapp/api/client.dart';
@@ -14,7 +12,6 @@ class Repository {
 
   Future<List<RestorantInfo>> fetchAll() async {
     Response response = await fetchall(apiClient);
-    // print('data: ${response.data}');
     return List<RestorantInfo>.from(
         (response.data).map((json) => RestorantInfo.fromJson(json)));
   }

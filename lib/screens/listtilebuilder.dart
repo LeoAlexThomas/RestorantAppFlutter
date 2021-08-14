@@ -1,39 +1,37 @@
+// import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-class ListItemsWidget extends StatefulWidget {
-  final List dishes;
-  final Map<String, int> dishCount;
-  final Function(String oper, Map<String, dynamic> selectedDish,
-      Map<String, int> updatedCount) onChanged;
-  const ListItemsWidget(
-      {Key? key,
-      required this.dishes,
-      required this.onChanged,
-      required this.dishCount})
-      : super(key: key);
+// ignore: must_be_immutable
+class ListTileDish extends StatefulWidget {
+  late List dishes;
+  final Function(String s, Map<String, dynamic> dish, int dishCount) onChanged;
+  ListTileDish({
+    Key? key,
+    required this.dishes,
+    required this.onChanged,
+  }) : super(key: key);
 
   @override
-  _ListItemsWidgetState createState() => _ListItemsWidgetState();
+  _ListTileDishState createState() => _ListTileDishState();
 }
 
-class _ListItemsWidgetState extends State<ListItemsWidget> {
-  var scrHeight;
-  var scrWidth;
-  var fontHeight;
-
+class _ListTileDishState extends State<ListTileDish> {
   @override
   Widget build(BuildContext context) {
-    scrHeight = MediaQuery.of(context).size.height / 100;
-    scrWidth = MediaQuery.of(context).size.width / 100;
-    fontHeight = MediaQuery.of(context).size.height * 0.01;
-    // print(widget.dishes.length);
-    return ListView.separated(
+    var scrHeight = MediaQuery.of(context).size.height / 100;
+    var scrWidth = MediaQuery.of(context).size.width / 100;
+    var fontHeight = MediaQuery.of(context).size.height * 0.01;
+    // log('Dish Given: ${widget.dishes[1]}');
+    return Container(
+      height: scrHeight * 85,
+      child: ListView.separated(
         separatorBuilder: (context, index) => Divider(
-              color: Colors.grey,
-            ),
+          color: Colors.grey,
+        ),
         itemCount: widget.dishes.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (BuildContext context, int index) {
           return ListTile(
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -43,6 +41,7 @@ class _ListItemsWidgetState extends State<ListItemsWidget> {
                 ),
               ],
             ),
+            // title: Text(widget.dishes[index]['dish_name']),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -107,19 +106,11 @@ class _ListItemsWidgetState extends State<ListItemsWidget> {
                                 GestureDetector(
                                   onTap: () {
                                     setState(() {
-                                      if (widget.dishCount[widget.dishes[index]
-                                              ['dish_name']]! >
-                                          0) {
-                                        widget.dishCount[widget.dishes[index]
-                                            ['dish_name']] = widget.dishCount[
-                                                widget.dishes[index]
-                                                    ['dish_name']]! -
-                                            1;
-                                      }
                                       widget.onChanged(
-                                          "remove",
-                                          widget.dishes[index],
-                                          widget.dishCount);
+                                        "remove",
+                                        widget.dishes[index],
+                                        widget.dishes[index]['dish_count'],
+                                      );
                                     });
                                   },
                                   child: Icon(
@@ -128,21 +119,17 @@ class _ListItemsWidgetState extends State<ListItemsWidget> {
                                   ),
                                 ),
                                 Text(
-                                  '${widget.dishCount[widget.dishes[index]["dish_name"]]}',
+                                  '${widget.dishes[index]['dish_count']}',
                                   style: TextStyle(color: Colors.white),
                                 ),
                                 GestureDetector(
                                   onTap: () {
                                     setState(() {
-                                      widget.dishCount[widget.dishes[index]
-                                          ["dish_name"]] = widget.dishCount[
-                                              widget.dishes[index]
-                                                  ["dish_name"]]! +
-                                          1;
                                       widget.onChanged(
-                                          "add",
-                                          widget.dishes[index],
-                                          widget.dishCount);
+                                        "add",
+                                        widget.dishes[index],
+                                        widget.dishes[index]['dish_count'],
+                                      );
                                     });
                                   },
                                   child: Icon(
@@ -175,6 +162,8 @@ class _ListItemsWidgetState extends State<ListItemsWidget> {
               ],
             ),
           );
-        });
+        },
+      ),
+    );
   }
 }

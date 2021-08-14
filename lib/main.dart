@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:restorantapp/controller/controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
+import 'package:restorantapp/controller/menuController.dart';
 
-import 'screens/home.dart';
 import 'screens/login_screen.dart';
 import 'screens/splashScreen.dart';
 
 void main() async {
   Get.put(RestorantController());
+  Get.put(MenuItemController());
   // await Firebase.initializeApp();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(

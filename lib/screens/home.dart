@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_cart/flutter_cart.dart';
 import 'package:restorantapp/Widget/listTileWidget.dart';
 import 'package:restorantapp/controller/menuController.dart';
 import 'package:restorantapp/controller/controller.dart';
@@ -9,6 +8,7 @@ import 'package:restorantapp/screens/login_screen.dart';
 import 'package:restorantapp/utils/firebase_auth.dart';
 
 class Home extends StatefulWidget {
+  // getting username, uid, image url from auth process
   final String username;
   final String uid;
   final String image;
@@ -24,9 +24,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  // Getting instance of classes which is extented get package
   final RestorantController resController = RestorantController.to;
   final MenuItemController menuController = MenuItemController.to;
-  var cart = FlutterCart();
+
   var information;
   _HomeState() {
     information = resController.info.first;
@@ -34,23 +35,29 @@ class _HomeState extends State<Home> {
 
   List menuList = [];
   List dishes = [];
+// Tab Menu View
   List<Widget> tabs = [];
+// Tab Detailed View
   List<Widget> tabChidren = [];
+// Loading Widget for Tab Bar
   List<Widget> tabLoadingWidget = [];
+// For Cart number at top of screen
   List<DishItems> cartItemAdded = [];
-  Map<String, int> dishCount = {};
 
   @override
   void initState() {
     super.initState();
+    // store data based on their category
     initialStep();
+    // creating menu tab widget
     tabWidget(menuList);
-    // tabBarWidget(menuList);
+    // creating tab Loading widget
     tabLoading(menuList);
-    // print('DishesCount: $dishCount');
+    // Calling cartItem fun for initial assign
     getCartItems();
   }
 
+// Getting how much dish is added to cart
   getCartItems() {
     menuController.menuitems.forEach((key, value) {
       for (var item in value) {
@@ -66,7 +73,6 @@ class _HomeState extends State<Home> {
     var scrWidth = MediaQuery.of(context).size.width / 100;
     var scrHeight = MediaQuery.of(context).size.height / 100;
     var fontHeight = MediaQuery.of(context).size.height * 0.01;
-    // print('Dishes: $dishes');
     return DefaultTabController(
       length: menuList.length,
       child: Scaffold(
@@ -143,7 +149,7 @@ class _HomeState extends State<Home> {
             padding: EdgeInsets.zero,
             children: [
               Container(
-                height: scrHeight * 25,
+                height: scrHeight * 30,
                 child: DrawerHeader(
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -201,19 +207,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  // List<Widget> get tabBarView {
-  //   List<Widget> tabbars = [];
-  //   for (var i = 0; i < menuList.length; i++) {
-  //     log('Dish :${dishes[i]}');
-  //     tabbars.add(ListTileBuilder(
-  //         onChanged: (String oper, String dishId, DishItems dish) =>
-  //             updateCartItems(oper, dishId, dish),
-  //         dishCat: menuList[i]));
-  //   }
-
-  //   return tabbars;
-  // }
-
+// Creating detailed tabs
   List<Widget> get tabBarView {
     List<Widget> tabbars = [];
     for (var i = 0; i < menuList.length; i++) {
@@ -227,6 +221,7 @@ class _HomeState extends State<Home> {
     return tabbars;
   }
 
+// This function will execute first to distribute the data based on their category
   initialStep() {
     for (var item in information.tableMenuList) {
       menuList.add(item['menu_category']);
@@ -247,10 +242,12 @@ class _HomeState extends State<Home> {
           false, //addToCart initial value
         ));
       }
+      // Calling add fun from controller
       menuController.add('${menuList[i]}', items);
     }
   }
 
+// Creating Menu Tabs
   tabWidget(List items) {
     for (var item in items) {
       tabs.add(
@@ -259,6 +256,7 @@ class _HomeState extends State<Home> {
     }
   }
 
+// Creating Tab Loading widget
   void tabLoading(List items) {
     for (var i = 0; i < items.length; i++) {
       tabLoadingWidget.add(
@@ -270,8 +268,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-// Using Dish Id
-
+// Update cart items based on user input [Using Dish Id to update cart item]
   updateCartItems(String action, String dishId, DishItems dish) {
     setState(() {
       // print(dishCat);
@@ -303,26 +300,4 @@ class _HomeState extends State<Home> {
       }
     });
   }
-
-  // Using Dish Catagory
-
-  // updateCartItems(String action, String dishCat, DishItems dish) {
-  //   setState(() {
-  //     // print(dishCat);
-  //     if (action == 'add') {
-  //       int index = menuController.menuitems[dishCat]!.indexOf(dish);
-  //       menuController.menuitems[dishCat]![index].dishCount++;
-  //       menuController.menuitems[dishCat]![index].addToCart = true;
-  //     } else if (action == 'remove') {
-  //       int index = menuController.menuitems[dishCat]!.indexOf(dish);
-  //       if (menuController.menuitems[dishCat]![index].dishCount > 0) {
-  //         menuController.menuitems[dishCat]![index].dishCount--;
-  //         if (menuController.menuitems[dishCat]![index].dishCount == 0) {
-  //           menuController.menuitems[dishCat]![index].addToCart = false;
-  //         }
-  //       }
-
-  //     }
-  //   });
-  // }
 }

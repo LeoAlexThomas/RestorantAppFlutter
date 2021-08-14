@@ -7,6 +7,7 @@ import 'package:restorantapp/models/menuItems.dart';
 import 'package:restorantapp/screens/home.dart';
 
 class CartScreenAlt extends StatefulWidget {
+  // Getting UserName, UID, Image Url for navigate to Home Screen after Order placed
   final String userName;
   final String uid;
   final String image;
@@ -25,7 +26,7 @@ class CartScreenAlt extends StatefulWidget {
 
 class _CartScreenAltState extends State<CartScreenAlt> {
   final cartItemController = MenuItemController.to;
-  List<String> dishName = [];
+  List<String> dishCategory = [];
   List<DishItems> dishAdded = [];
   int totalItems = 0;
   int totalDish = 0;
@@ -37,14 +38,16 @@ class _CartScreenAltState extends State<CartScreenAlt> {
   @override
   void initState() {
     super.initState();
+    // getting category name for all dishes
     cartItemController.menuitems.forEach((key, value) {
-      dishName.add(key);
+      dishCategory.add(key);
     });
-    // print(dishName);
+    // Get initial value for how many number of dishes and items are added to cart
     getCartItems();
     getItemCount();
   }
 
+// Getting No of Dishes added
   getCartItems() {
     cartItemController.menuitems.forEach((key, value) {
       for (var item in value) {
@@ -55,6 +58,7 @@ class _CartScreenAltState extends State<CartScreenAlt> {
     });
   }
 
+// Getting total no of dishes count in cart
   getItemCount() {
     int items = 0;
     totalDish = dishAdded.length;
@@ -132,7 +136,7 @@ class _CartScreenAltState extends State<CartScreenAlt> {
                   ),
                 ),
                 Container(
-                  height: scrHeight * 60,
+                  height: scrHeight * 57,
                   child: ListView.separated(
                     itemCount: dishAdded.length,
                     separatorBuilder: (BuildContext context, int index) {
@@ -302,25 +306,13 @@ class _CartScreenAltState extends State<CartScreenAlt> {
     );
   }
 
-  String getDishName(String dishId) {
-    debugger();
-    String dishName = '';
-    cartItemController.menuitems.forEach((key, value) {
-      for (var item in value) {
-        if (item.dishId == dishId) {
-          dishName = item.dishName;
-          print(item.dishName);
-        }
-      }
-    });
-    return dishName;
-  }
-
+// Rounding the double value
   double roundDouble(double value, int places) {
     num mod = pow(10.0, places);
     return ((value * mod).round().toDouble() / mod);
   }
 
+// Return total amount for all dishes
   Widget totalAmount() {
     total = 0;
     for (var item in dishAdded) {

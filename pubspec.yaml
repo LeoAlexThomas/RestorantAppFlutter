@@ -27,7 +27,7 @@ dependencies:
   firebase_auth: ^3.0.1
   flutter:
     sdk: flutter
-  flutter_cart: ^0.0.6
+  fluttertoast: ^8.0.8
   get: any
   google_sign_in: ^5.0.5
   pinput: ^1.2.0

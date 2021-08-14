@@ -8,12 +8,13 @@ import 'screens/login_screen.dart';
 import 'screens/splashScreen.dart';
 
 void main() async {
-  Get.put(RestorantController());
-  Get.put(MenuItemController());
+  Get.put(RestorantController()); // This file will be use for get package
+  Get.put(MenuItemController()); // This file will be use for get package
   // await Firebase.initializeApp();
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding
+      .ensureInitialized(); // Flutter Firebase Auth initial line
   runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
+    debugShowCheckedModeBanner: false, // Dismiss debug banner
     home: AppState(),
   ));
 }
@@ -33,6 +34,7 @@ class _AppStateState extends State<AppState> {
         future: _futureApp,
         builder: (context, AsyncSnapshot<FirebaseApp> snapshot) {
           if (snapshot.hasError) {
+            // Return this widget if error occur
             return Scaffold(
               body: Center(
                 child: Text("Something Went wrong"),
@@ -40,9 +42,10 @@ class _AppStateState extends State<AppState> {
             );
           }
           if (snapshot.connectionState == ConnectionState.done) {
+            // Return this widget if connection successfull
             return LoginScreen();
           }
-
+          // Return this widget if connection status is waiting
           return SplashScreen();
         });
   }

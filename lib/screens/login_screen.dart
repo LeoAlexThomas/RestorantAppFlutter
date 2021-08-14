@@ -5,6 +5,7 @@ import 'package:pinput/pin_put/pin_put.dart';
 import 'package:restorantapp/controller/controller.dart';
 import 'package:restorantapp/screens/home.dart';
 import 'package:restorantapp/utils/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -14,33 +15,43 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // Declaring ScaffoldState as global for this file
   final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
+
+  // Getting instance of class which is extented get package
   final controller = Get.find<RestorantController>();
+
+  // Getting TextEditingController to read input of Mobile textfield
   final mbController = TextEditingController();
+
   late String _verificationCode;
   @override
   void initState() {
     super.initState();
-    controller.fetchAllRestorantInfo();
+    controller.fetchAllRestorantInfo(); // fetching all info from api
   }
 
   @override
   void dispose() {
     super.dispose();
-    mbController.dispose();
+    mbController.dispose(); // disposing texteditingcontroller
   }
 
   @override
   Widget build(BuildContext context) {
-    var scrHeight = MediaQuery.of(context).size.height / 100;
-    var scrWidth = MediaQuery.of(context).size.width / 100;
-    var fontHeight = MediaQuery.of(context).size.height * 0.01;
+    var scrHeight = MediaQuery.of(context).size.height /
+        100; // To get screen Height of current device
+    var scrWidth = MediaQuery.of(context).size.width /
+        100; // To get screen Width of current device
+    var fontHeight = MediaQuery.of(context).size.height *
+        0.01; // To get specification for font size of current device
     return Scaffold(
       body: Container(
         width: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Displaying Asset image
             Image.asset(
               'assets/icons/firebase-logo.png',
               height: scrHeight * 45,
@@ -48,10 +59,11 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             GestureDetector(
               onTap: () async {
+                // Getting Started for authentication for user press the button
                 Map<String, dynamic> res =
                     await AuthProvider().loginWithGoogle();
                 if (res['result']) {
-                  print('Logged in');
+                  // If authentication successfull navigate to home screen
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -61,7 +73,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 image: res['image'],
                               )));
                 } else
-                  print('Log in error');
+                  // If authentication failed show this message
+                  Fluttertoast.showToast(
+                    gravity: ToastGravity.CENTER,
+                    backgroundColor: Colors.grey,
+                    textColor: Colors.white,
+                    timeInSecForIosWeb: 2,
+                    msg: 'Unable to Login',
+                  );
               },
               child: Container(
                 width: scrWidth * 75,
@@ -164,6 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+// for Phone number Authentication
   showMessage() {
     return showDialog(
         context: context,
@@ -193,6 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
         });
   }
 
+// OTP Entering Dialoge Box
   showOTPInputScreen() {
     final TextEditingController _pinPutController = TextEditingController();
     final FocusNode _pinPutFocusNode = FocusNode();

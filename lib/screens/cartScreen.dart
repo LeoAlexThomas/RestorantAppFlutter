@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:restorantapp/controller/menuController.dart';
 import 'package:restorantapp/models/menuItems.dart';
 import 'package:restorantapp/screens/home.dart';

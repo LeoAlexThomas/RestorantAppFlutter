@@ -1,5 +1,5 @@
 import 'package:restorantapp/repository/repository.dart';
-import 'package:restorantapp/retorantInfo/restorant.dart';
+import 'package:restorantapp/models/restorant.dart';
 import 'package:get/get.dart';
 
 class RestorantController extends GetxController {

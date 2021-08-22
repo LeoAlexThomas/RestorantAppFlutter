@@ -24,6 +24,10 @@ class _LoginScreenState extends State<LoginScreen> {
   // Getting TextEditingController to read input of Mobile textfield
   final mbController = TextEditingController();
 
+  var scrHeight;
+  var scrWidth;
+  var fontHeight;
+
   late String _verificationCode;
   @override
   void initState() {
@@ -39,11 +43,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var scrHeight = MediaQuery.of(context).size.height /
+    scrHeight = MediaQuery.of(context).size.height /
         100; // To get screen Height of current device
-    var scrWidth = MediaQuery.of(context).size.width /
+    scrWidth = MediaQuery.of(context).size.width /
         100; // To get screen Width of current device
-    var fontHeight = MediaQuery.of(context).size.height *
+    fontHeight = MediaQuery.of(context).size.height *
         0.01; // To get specification for font size of current device
     return Scaffold(
       body: Container(
@@ -230,12 +234,16 @@ class _LoginScreenState extends State<LoginScreen> {
           return AlertDialog(
             title: Text("Enter your OTP"),
             content: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: EdgeInsets.symmetric(
+                horizontal: scrWidth * 5,
+                vertical: scrHeight * 5,
+              ),
               child: PinPut(
                 fieldsCount: 6,
-                textStyle: const TextStyle(fontSize: 25.0, color: Colors.white),
-                eachFieldWidth: 40.0,
-                eachFieldHeight: 55.0,
+                textStyle:
+                    TextStyle(fontSize: fontHeight * 2.5, color: Colors.white),
+                eachFieldWidth: scrWidth * 5,
+                eachFieldHeight: scrHeight * 5,
                 focusNode: _pinPutFocusNode,
                 controller: _pinPutController,
                 submittedFieldDecoration: pinPutDecoration,
